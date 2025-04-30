@@ -1,0 +1,54 @@
+### 勾股定理+dfs
+
+A炸弹爆炸引爆B炸弹表示顶点A到B是联通的，使用勾股定理检测两个顶点的连通性。
+因此本题可以转化为计算有向图的最大连通区域问题，可使用dfs求解。
+如下图所示。
+![maximum_connected_area.png](https://pic.leetcode-cn.com/1639274107-fTddvV-maximum_connected_area.png)
+
+### 代码
+
+* []
+
+```python
+class Solution:
+    @staticmethod
+    def maxDConnectedArea(G):
+        '''
+        计算有向图的最大连通区域
+        :param G:example [[set(),set([1,2])],[set(0),set()],[set(0),set()]]
+        '''
+        n=len(G)
+        def dfs(i):
+            if G[i][1]:
+                for j in G[i][1]:
+                    if j not in vis:
+                        vis.add(j)
+                        dfs(j)
+        ans=0
+        for i in range(n):
+            vis = {i}
+            dfs(i)
+            ans=max(ans,len(vis))
+        return ans
+
+    def maximumDetonation(self, B: List[List[int]]) -> int:
+        n=len(B)
+        def path(i,j):
+            x1,y1,d,x2,y2=B[i][0],B[i][1],B[i][2],B[j][0],B[j][1]
+            if (x1-x2)**2+(y1-y2)**2 <= (d**2):
+                return True
+            return False
+        #建图
+        G=[[set(),set()] for _ in range(n)]
+        for i in range(n):
+            for j in range(n):
+                if i!=j:
+                    if path(i,j):
+                        G[i][1].add(j)
+                        G[j][0].add(i)
+        #计算有向图的最大连通区域
+        return Solution.maxDConnectedArea(G)
+```
+
+时间复杂度:$O((V+E)^3)$。
+空间复杂度:$O(V+E)$。V是定点数，E是边数。

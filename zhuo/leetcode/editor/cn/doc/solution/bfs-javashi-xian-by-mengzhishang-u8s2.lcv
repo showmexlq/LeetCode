@@ -1,0 +1,84 @@
+> Problem: [2101. 引爆最多的炸弹](https://leetcode.cn/problems/detonate-the-maximum-bombs/description/)
+
+[TOC]
+
+# 思路
+
+注意一点：炸弹的引爆是单向的，a 能引爆 b，b 不一定能引爆 a；因此，这题不能并查集；
+具体地：
+1. 初始化每个炸弹能爆的炸弹集合
+2. 对每个炸弹DFS/BFS搜索即可
+
+# 解题过程
+
+如上。
+
+# 复杂度
+
+n 为炸弹个数
+- 时间复杂度: $O(n ^ 2)$
+- 空间复杂度: $O(n ^ 2)$
+
+# Code
+
+* []
+
+```Java
+class Solution {
+    List<Integer>[] nexts;
+    int ans = 0;
+    public int maximumDetonation(int[][] bombs) {
+        // 初始化每个炸弹能爆的炸弹集合
+        // 对每个炸弹DFS搜索即可
+        // 这题不能并查集，因为炸弹引爆是有向的
+        int n = bombs.length;
+        List<Integer>[] nexts = new ArrayList[n];
+        for (int i = 0 ; i < n; ++i) {
+            nexts[i] = new ArrayList<> ();
+        }
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (i == j) {
+                    continue;
+                }
+                if (canBomb(i, j, bombs)) {
+                    nexts[i].add(j);
+                }
+            }
+        }
+        this.nexts = nexts;
+        for (int i = 0; i < n; ++i) {
+            ans = Math.max(ans, bfs(i, 1, new boolean[n]));
+        }
+        return ans;
+    }
+
+    private int bfs(int node, int total, boolean[] vist) {
+        Queue<Integer> q = new ArrayDeque<> ();
+        q.offer(node);
+        int cnt = 0;
+        while (!q.isEmpty()) {
+            int now = q.poll();
+            if (vist[now]) {
+                continue;
+            }
+            cnt += 1;
+            vist[now] = true;
+             for (Integer next : nexts[now]) {
+                if (vist[next]) {
+                    continue;
+                }
+                q.offer(next);
+            }
+        }
+        return cnt;
+    }
+
+    public boolean canBomb(int a, int b, int[][] bombs) {
+        long dis1 = (long)Math.pow(bombs[a][0] - bombs[b][0], 2) + (long)Math.pow(bombs[a][1] - bombs[b][1], 2);
+        long dis2 = (long)Math.pow(bombs[a][2], 2);
+        return dis2 >= dis1;
+    }
+}
+```
+
